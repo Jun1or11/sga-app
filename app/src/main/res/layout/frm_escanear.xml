@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    tools:context=".vista.frmEscanear">
+
+    <!-- Header Text -->
+    <LinearLayout
+        android:id="@+id/header_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="24dp"
+        android:paddingTop="32dp"
+        android:paddingBottom="16dp"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="_____________________________________"
+            android:textColor="@color/on_surface_variant"
+            android:textSize="14sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Recepción de Almacén"
+            android:textColor="@color/on_surface"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <!-- Camera Card -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/camera_card"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_margin="16dp"
+        app:cardCornerRadius="24dp"
+        app:cardElevation="4dp"
+        app:layout_constraintTop_toBottomOf="@id/header_container"
+        app:strokeWidth="0dp">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.camera.view.PreviewView
+                android:id="@+id/previewView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <!-- Focus Frame -->
+            <View
+                android:layout_width="280dp"
+                android:layout_height="160dp"
+                android:layout_gravity="center"
+                android:background="@drawable/scanner_frame_white" />
+
+            <!-- Icons -->
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_margin="16dp"
+                android:src="@drawable/ic_home"
+                app:tint="@color/white" />
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="end"
+                android:layout_margin="16dp"
+                android:src="@android:drawable/ic_menu_close_clear_cancel"
+                app:tint="@color/white" />
+
+            <!-- Success Banner (Pill Shape) -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/success_banner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginBottom="16dp"
+                android:visibility="gone"
+                app:cardBackgroundColor="#52C498"
+                app:cardCornerRadius="30dp"
+                app:cardElevation="4dp"
+                app:strokeWidth="0dp">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="20dp"
+                    android:paddingVertical="12dp">
+
+                    <TextView
+                        android:id="@+id/banner_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:text="Agregado: Puzo Clásico 60ml"
+                        android:textColor="@color/white"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:src="@android:drawable/ic_menu_close_clear_cancel"
+                        app:tint="@color/white" />
+                </RelativeLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Overlay for simulation -->
+            <View
+                android:id="@+id/btn_simulate_scan"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="?attr/selectableItemBackground" />
+
+        </FrameLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Scan List Section -->
+    <TextView
+        android:id="@+id/label_list"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:text="Productos en lista"
+        android:textColor="@color/on_surface"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/camera_card" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_scan_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        android:background="#F1F3F4"
+        android:paddingTop="8dp"
+        android:clipToPadding="false"
+        app:layout_constraintBottom_toTopOf="@id/bottom_container"
+        app:layout_constraintTop_toBottomOf="@id/label_list"
+        app:layout_constraintVertical_weight="1" />
+
+    <!-- Bottom Container -->
+    <LinearLayout
+        android:id="@+id/bottom_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:orientation="vertical"
+        android:padding="16dp"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp">
+            <TextView
+                android:id="@+id/text_item_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0 productos"
+                android:textColor="@color/on_surface_variant" />
+            <TextView
+                android:id="@+id/text_total_price"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:text="Total: S/ 0.00"
+                android:textColor="@color/on_surface"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_checkout"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="8dp"
+                android:text="Escanear"
+                android:textAllCaps="false"
+                android:textSize="16sp"
+                app:backgroundTint="@color/primary"
+                app:cornerRadius="30dp"
+                app:icon="@drawable/ic_scan" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_confirm_entry"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:text="Confirmar"
+                android:textAllCaps="false"
+                android:textSize="16sp"
+                app:backgroundTint="@color/primary"
+                app:cornerRadius="30dp"
+                app:icon="@drawable/ic_inventory" />
+        </LinearLayout>
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
