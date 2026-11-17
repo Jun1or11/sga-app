@@ -12,12 +12,17 @@ public class Producto implements Serializable {
     private String ubicacion;
     private double precio;
     private String codigoQr;      // NUEVO: para almacenar datos del QR escaneado
+    private int proveedorId;      // 0 = sin proveedor asignado
 
     public Producto(int id, String nombre, String codigo, String categoria, int stock, int stockMinimo, String ubicacion, double precio) {
-        this(id, nombre, codigo, categoria, stock, stockMinimo, ubicacion, precio, null);
+        this(id, nombre, codigo, categoria, stock, stockMinimo, ubicacion, precio, null, 0);
     }
 
     public Producto(int id, String nombre, String codigo, String categoria, int stock, int stockMinimo, String ubicacion, double precio, String codigoQr) {
+        this(id, nombre, codigo, categoria, stock, stockMinimo, ubicacion, precio, codigoQr, 0);
+    }
+
+    public Producto(int id, String nombre, String codigo, String categoria, int stock, int stockMinimo, String ubicacion, double precio, String codigoQr, int proveedorId) {
         this.id = id;
         this.nombre = nombre;
         this.codigo = codigo;
@@ -27,6 +32,7 @@ public class Producto implements Serializable {
         this.ubicacion = ubicacion;
         this.precio = precio;
         this.codigoQr = codigoQr;
+        this.proveedorId = proveedorId;
     }
 
     public int getId() { return id; }
@@ -55,6 +61,9 @@ public class Producto implements Serializable {
 
     public String getCodigoQr() { return codigoQr; }
     public void setCodigoQr(String codigoQr) { this.codigoQr = codigoQr; }
+
+    public int getProveedorId() { return proveedorId; }
+    public void setProveedorId(int proveedorId) { this.proveedorId = proveedorId; }
 
     // Método de negocio movido a ProductoNegocio, se mantiene por compatibilidad
     public String getEstado() {

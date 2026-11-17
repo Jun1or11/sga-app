@@ -2,61 +2,61 @@ package com.example.gestiondeinventario.datos.repositorio;
 
 import android.content.Context;
 
-import com.example.gestiondeinventario.controlador.ProductoControlador;
+import com.example.gestiondeinventario.datos.dao.ProductoDao;
 import com.example.gestiondeinventario.modelo.Producto;
 
 import java.util.List;
 
 public class ProductoRepositorio {
 
-    private ProductoControlador controlador;
+    private ProductoDao dao;
 
     public ProductoRepositorio(Context context) {
-        controlador = new ProductoControlador(context);
-        controlador.abrir();
+        dao = new ProductoDao(context);
+        dao.abrir();
     }
 
     public void cerrar() {
-        controlador.cerrar();
+        dao.cerrar();
     }
 
     public long agregarProducto(Producto producto) {
-        return controlador.insertar(producto);
+        return dao.insertar(producto);
     }
 
     public int actualizarProducto(Producto producto) {
-        return controlador.actualizar(producto);
+        return dao.actualizar(producto);
     }
 
     public int eliminarProducto(Producto producto) {
-        return controlador.eliminar(producto.getId());
+        return dao.eliminar(producto.getId());
     }
 
     public int eliminarProductoPorCodigo(String codigo) {
-        return controlador.eliminarPorCodigo(codigo);
+        return dao.eliminarPorCodigo(codigo);
     }
 
     public Producto obtenerPorId(int id) {
-        return controlador.obtenerPorId(id);
+        return dao.obtenerPorId(id);
     }
 
     public Producto obtenerPorCodigo(String codigo) {
-        return controlador.obtenerPorCodigo(codigo);
+        return dao.obtenerPorCodigo(codigo);
     }
 
     public List<Producto> obtenerTodos() {
-        return controlador.obtenerTodos();
+        return dao.obtenerTodos();
     }
 
     public List<Producto> buscarPorNombre(String busqueda) {
-        return controlador.buscarPorNombre(busqueda);
+        return dao.buscarPorNombre(busqueda);
     }
 
     public List<Producto> filtrarPorEstado(String estado) {
-        return controlador.filtrarPorEstado(estado);
+        return dao.filtrarPorEstado(estado);
     }
 
     public int actualizarStock(int id, int nuevoStock) {
-        return controlador.actualizarStock(id, nuevoStock);
+        return dao.actualizarStock(id, nuevoStock);
     }
 }

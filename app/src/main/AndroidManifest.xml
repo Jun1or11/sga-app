@@ -3,8 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
+        android:name=".SgaApp"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -33,6 +35,20 @@
         <activity
             android:name=".vista.frmInsertarProducto"
             android:exported="false" />
+        <activity
+            android:name=".vista.frmNotificaciones"
+            android:exported="false" />
+        <activity
+            android:name=".vista.frmEnvios"
+            android:exported="false" />
+        <activity
+            android:name=".vista.frmNuevoEnvio"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".vista.frmDetalleEnvio"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
     </application>
 
 </manifest>

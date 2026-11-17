@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="categorias_producto">
+        <item>Accesorios</item>
+        <item>Almacenamiento</item>
+        <item>Audio</item>
+        <item>Cables</item>
+        <item>Cámaras</item>
+        <item>Cargadores</item>
+        <item>Periféricos</item>
+        <item>Radios</item>
+        <item>Redes</item>
+        <item>Wearables</item>
+        <item>Otros</item>
+    </string-array>
+</resources>

@@ -9,8 +9,12 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.gestiondeinventario.controlador.UsuarioControlador;
+import com.example.gestiondeinventario.datos.dao.UsuarioDao;
+import com.example.gestiondeinventario.datos.repositorio.ActividadRepositorio;
+import com.example.gestiondeinventario.modelo.Actividad;
 import com.example.gestiondeinventario.modelo.Usuario;
+import com.example.gestiondeinventario.util.SesionActual;
+import com.example.gestiondeinventario.util.TurnoUtil;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 
@@ -19,11 +23,13 @@ public class LoginActivity extends AppCompatActivity {
     public static final String PREFS_NAME = "SGA_PREFS";
     public static final String KEY_IS_LOGGED_IN = "is_logged_in";
     public static final String KEY_USERNAME = "username";
+    public static final String KEY_NOMBRE = "nombre";
+    public static final String KEY_TURNO = "turno";
 
     private TextInputEditText editUsername, editPassword;
     private MaterialButton btnLogin;
 
-    private UsuarioControlador usuarioControlador;
+    private UsuarioDao usuarioDao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,8 +43,8 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         try {
-            usuarioControlador = new UsuarioControlador(this);
-            usuarioControlador.abrir();
+            usuarioDao = new UsuarioDao(this);
+            usuarioDao.abrir();
         } catch (Exception e) {
             Toast.makeText(this, "Error al abrir base de datos: " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
@@ -68,19 +74,23 @@ public class LoginActivity extends AppCompatActivity {
 
         // Autenticación contra base de datos SQLite
         try {
-            if (usuarioControlador == null) {
-                usuarioControlador = new UsuarioControlador(this);
-                usuarioControlador.abrir();
+            if (usuarioDao == null) {
+                usuarioDao = new UsuarioDao(this);
+                usuarioDao.abrir();
             }
 
-            Usuario usuario = usuarioControlador.login(username, password);
+            Usuario usuario = usuarioDao.login(username, password);
 
             if (usuario != null) {
                 SharedPreferences prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
                 prefs.edit()
                         .putBoolean(KEY_IS_LOGGED_IN, true)
                         .putString(KEY_USERNAME, usuario.getUsername())
+                        .putString(KEY_NOMBRE, usuario.getNombre() != null ? usuario.getNombre() : usuario.getUsername())
+                        .putString(KEY_TURNO, usuario.getTurno() != null ? usuario.getTurno() : Usuario.TURNO_MANANA)
                         .apply();
+
+                registrarInicioSesion();
 
                 Toast.makeText(this, "¡Bienvenido, " + usuario.getNombre() + "!", Toast.LENGTH_SHORT).show();
                 navigateToMain();
@@ -89,6 +99,19 @@ public class LoginActivity extends AppCompatActivity {
             }
         } catch (Exception e) {
             Toast.makeText(this, "Error en inicio de sesión: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void registrarInicioSesion() {
+        ActividadRepositorio actividadRepositorio = null;
+        try {
+            actividadRepositorio = new ActividadRepositorio(this);
+            actividadRepositorio.registrar(Actividad.TIPO_SESION_INICIO,
+                    "inició sesión (" + TurnoUtil.etiqueta(SesionActual.getTurno(this)).toLowerCase() + ")");
+        } catch (Exception e) {
+            // No bloquear el login si falla el registro de actividad
+        } finally {
+            if (actividadRepositorio != null) actividadRepositorio.cerrar();
         }
     }
 
@@ -101,8 +124,8 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (usuarioControlador != null) {
-            usuarioControlador.cerrar();
+        if (usuarioDao != null) {
+            usuarioDao.cerrar();
         }
     }
 }

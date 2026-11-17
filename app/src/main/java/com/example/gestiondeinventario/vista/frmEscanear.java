@@ -2,11 +2,17 @@ package com.example.gestiondeinventario.vista;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.media.AudioManager;
+import android.media.ToneGenerator;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,9 +34,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.gestiondeinventario.R;
-import com.example.gestiondeinventario.controlador.ProductoControlador;
+import com.example.gestiondeinventario.datos.repositorio.ActividadRepositorio;
 import com.example.gestiondeinventario.datos.repositorio.ProductoRepositorio;
+import com.example.gestiondeinventario.modelo.Actividad;
 import com.example.gestiondeinventario.modelo.Producto;
+import com.example.gestiondeinventario.util.PreferenciasApp;
 import com.example.gestiondeinventario.vista.adaptador.AdaptadorEscaneo;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.mlkit.vision.barcode.BarcodeScanner;
@@ -62,6 +70,12 @@ public class frmEscanear extends Fragment implements AdaptadorEscaneo.OnEscaneoI
     private View successBanner;
 
     private ProductoRepositorio repositorio;
+    private ActividadRepositorio actividadRepositorio;
+
+    private ToneGenerator toneGenerator;
+    private String ultimoCodigo = "";
+    private long ultimoCodigoMs = 0L;
+    private boolean detalleAbierto = false;
 
     @Nullable
     @Override
@@ -69,6 +83,7 @@ public class frmEscanear extends Fragment implements AdaptadorEscaneo.OnEscaneoI
         View view = inflater.inflate(R.layout.frm_escanear, container, false);
 
         repositorio = new ProductoRepositorio(requireContext());
+        actividadRepositorio = new ActividadRepositorio(requireContext());
 
         previewView = view.findViewById(R.id.previewView);
         recyclerView = view.findViewById(R.id.recycler_scan_list);
@@ -110,6 +125,12 @@ public class frmEscanear extends Fragment implements AdaptadorEscaneo.OnEscaneoI
             int quantityToAdd = productQuantities.getOrDefault(p.getId(), 1);
             p.setStock(p.getStock() + quantityToAdd);
             repositorio.actualizarStock(p.getId(), p.getStock());
+            try {
+                actividadRepositorio.registrar(Actividad.TIPO_ENTRADA,
+                        "ingresó +" + quantityToAdd + " ud(s) de '" + p.getNombre() + "'");
+            } catch (Exception e) {
+                Log.e("frmEscanear", "Error registrando entrada", e);
+            }
         }
         Toast.makeText(getContext(), "Stock actualizado correctamente", Toast.LENGTH_SHORT).show();
         scannedProducts.clear();
@@ -137,16 +158,67 @@ public class frmEscanear extends Fragment implements AdaptadorEscaneo.OnEscaneoI
         adapter.notifyDataSetChanged();
         showSuccessBanner(product.getNombre());
         updateTotals();
+        abrirDetalleSiConfigurado(product);
     }
 
     private void showSuccessBanner(String name) {
         if (bannerText != null && successBanner != null) {
             bannerText.setText("Agregado: " + name);
             successBanner.setVisibility(View.VISIBLE);
+            reproducirFeedback();
             new Handler(Looper.getMainLooper()).postDelayed(() -> {
                 if (isAdded()) successBanner.setVisibility(View.GONE);
             }, 1500);
         }
+    }
+
+    private void reproducirFeedback() {
+        if (!isAdded()) return;
+
+        if (PreferenciasApp.isEscanerSonido(requireContext())) {
+            try {
+                if (toneGenerator == null) {
+                    toneGenerator = new ToneGenerator(AudioManager.STREAM_NOTIFICATION, 80);
+                }
+                toneGenerator.startTone(ToneGenerator.TONE_PROP_BEEP, 120);
+            } catch (Exception e) {
+                Log.w("frmEscanear", "No se pudo reproducir el sonido", e);
+            }
+        }
+
+        if (PreferenciasApp.isEscanerVibracion(requireContext())) {
+            try {
+                Vibrator vibrator = (Vibrator) requireContext()
+                        .getSystemService(Context.VIBRATOR_SERVICE);
+                if (vibrator != null && vibrator.hasVibrator()) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        vibrator.vibrate(VibrationEffect.createOneShot(
+                                80, VibrationEffect.DEFAULT_AMPLITUDE));
+                    } else {
+                        vibrator.vibrate(80);
+                    }
+                }
+            } catch (Exception e) {
+                Log.w("frmEscanear", "No se pudo vibrar", e);
+            }
+        }
+    }
+
+    private void abrirDetalleSiConfigurado(Producto product) {
+        if (!isAdded() || !PreferenciasApp.isEscanerAbrirProducto(requireContext())) return;
+        if (detalleAbierto) return;
+
+        detalleAbierto = true;
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            if (!isAdded()) {
+                detalleAbierto = false;
+                return;
+            }
+            Intent intent = new Intent(getActivity(), frmDetalleProducto.class);
+            intent.putExtra("producto", product);
+            startActivity(intent);
+            detalleAbierto = false;
+        }, 700);
     }
 
     @Override
@@ -241,6 +313,13 @@ public class frmEscanear extends Fragment implements AdaptadorEscaneo.OnEscaneoI
     }
 
     private void handleRealScan(String code) {
+        long ahora = System.currentTimeMillis();
+        if (code.equals(ultimoCodigo) && (ahora - ultimoCodigoMs) < 1500) {
+            return;
+        }
+        ultimoCodigo = code;
+        ultimoCodigoMs = ahora;
+
         if (getActivity() != null) {
             getActivity().runOnUiThread(() -> {
                 Producto p = repositorio.obtenerPorCodigo(code);
@@ -251,9 +330,20 @@ public class frmEscanear extends Fragment implements AdaptadorEscaneo.OnEscaneoI
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        detalleAbierto = false;
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
         if (cameraExecutor != null) cameraExecutor.shutdown();
+        if (toneGenerator != null) {
+            toneGenerator.release();
+            toneGenerator = null;
+        }
         if (repositorio != null) repositorio.cerrar();
+        if (actividadRepositorio != null) actividadRepositorio.cerrar();
     }
 }

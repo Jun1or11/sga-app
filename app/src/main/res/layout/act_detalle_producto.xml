@@ -70,7 +70,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:text="Herramientas"
+                        android:text="Cables"
                         android:clickable="false"
                         app:chipBackgroundColor="@color/background"
                         app:chipStrokeWidth="0dp" />
@@ -122,6 +122,26 @@
                             app:cornerRadius="24dp" />
                     </LinearLayout>
 
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_update_stock"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Actualizar stock"
+                        android:textColor="@color/primary"
+                        app:cornerRadius="20dp" />
+
+                    <TextView
+                        android:id="@+id/tv_cambios_pendientes"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="Cambios sin guardar"
+                        android:textColor="@color/warning"
+                        android:textSize="12sp"
+                        android:visibility="gone" />
+
                     <TextView
                         android:id="@+id/detail_status"
                         android:layout_width="wrap_content"
@@ -160,8 +180,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
-                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Stock mínimo" android:textColor="@color/on_surface_variant"/>
-                        <TextView android:id="@+id/detail_min_stock" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="10" android:textColor="@color/on_surface" android:textStyle="bold"/>
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Proveedor" android:textColor="@color/on_surface_variant"/>
+                        <TextView android:id="@+id/detail_provider" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Sin proveedor" android:textColor="@color/on_surface" android:textStyle="bold"/>
                     </LinearLayout>
 
                     <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/divider" android:layout_marginVertical="12dp"/>
@@ -170,11 +190,22 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Stock mínimo" android:textColor="@color/on_surface_variant"/>
+                        <TextView android:id="@+id/detail_min_stock" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="10" android:textColor="@color/on_surface" android:textStyle="bold"/>
+                    </LinearLayout>
+
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/divider" android:layout_marginVertical="12dp"/>
+
+                    <LinearLayout
+                        android:id="@+id/row_detail_location"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
                         <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Ubicación" android:textColor="@color/on_surface_variant"/>
                         <TextView android:id="@+id/detail_location" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Pasillo 3 - Estante B" android:textColor="@color/on_surface" android:textStyle="bold"/>
                     </LinearLayout>
 
-                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/divider" android:layout_marginVertical="12dp"/>
+                    <View android:id="@+id/divider_detail_location" android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/divider" android:layout_marginVertical="12dp"/>
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -200,6 +231,15 @@
                     android:layout_weight="1"
                     android:text="Editar"
                     android:textColor="@color/primary"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_damage"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Dañado"
+                    android:textColor="@color/warning"/>
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_delete"

@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -17,25 +18,33 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.gestiondeinventario.R;
-import com.example.gestiondeinventario.controlador.ProductoControlador;
 import com.example.gestiondeinventario.datos.repositorio.ProductoRepositorio;
 import com.example.gestiondeinventario.modelo.Producto;
 import com.example.gestiondeinventario.negocio.ProductoNegocio;
+import com.example.gestiondeinventario.util.CategoriaUtil;
 import com.example.gestiondeinventario.vista.adaptador.AdaptadorProducto;
 import com.google.android.material.chip.ChipGroup;
+import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 public class frmInventario extends Fragment implements AdaptadorProducto.OnProductoClickListener {
 
     private static final String TAG = "frmInventario";
+    private static final String TODAS_LAS_CATEGORIAS = "Todas las categorías";
 
     private AdaptadorProducto adaptador;
     private List<Producto> todosLosProductos;
     private String filtroActual = "Todos";
     private String busquedaActual = "";
+    private String categoriaActual = TODAS_LAS_CATEGORIAS;
+
+    private MaterialAutoCompleteTextView filtroCategoria;
+    private final List<String> opcionesCategorias = new ArrayList<>();
+    private ArrayAdapter<String> adaptadorCategorias;
 
     private ProductoRepositorio repositorio;
     private ProductoNegocio negocio;
@@ -81,6 +90,8 @@ public class frmInventario extends Fragment implements AdaptadorProducto.OnProdu
             public void afterTextChanged(Editable s) {}
         });
 
+        configurarFiltroCategorias(view);
+
         ChipGroup filterGroup = view.findViewById(R.id.filter_chip_group);
         filterGroup.setOnCheckedStateChangeListener((group, checkedIds) -> {
             if (checkedIds.isEmpty()) {
@@ -100,6 +111,64 @@ public class frmInventario extends Fragment implements AdaptadorProducto.OnProdu
         });
 
         return view;
+    }
+
+    private void configurarFiltroCategorias(View view) {
+        filtroCategoria = view.findViewById(R.id.filter_categoria);
+        opcionesCategorias.clear();
+        opcionesCategorias.add(TODAS_LAS_CATEGORIAS);
+        opcionesCategorias.addAll(obtenerCategoriasDisponibles());
+
+        adaptadorCategorias = new ArrayAdapter<>(
+                requireContext(),
+                R.layout.item_dropdown_proveedor,
+                opcionesCategorias
+        );
+        filtroCategoria.setAdapter(adaptadorCategorias);
+        filtroCategoria.setThreshold(0);
+        filtroCategoria.setText(TODAS_LAS_CATEGORIAS, false);
+        filtroCategoria.setOnClickListener(v -> {
+            if (adaptadorCategorias.getCount() > 0) filtroCategoria.showDropDown();
+        });
+        filtroCategoria.setOnItemClickListener((parent, view1, position, id) -> {
+            if (position >= 0 && position < opcionesCategorias.size()) {
+                categoriaActual = opcionesCategorias.get(position);
+                aplicarFiltros();
+            }
+        });
+    }
+
+    private List<String> obtenerCategoriasDisponibles() {
+        List<String> disponibles = new ArrayList<>();
+        if (todosLosProductos == null) return disponibles;
+
+        LinkedHashSet<String> categoriasPresentes = new LinkedHashSet<>();
+        for (Producto p : todosLosProductos) {
+            categoriasPresentes.add(CategoriaUtil.normalizar(p.getCategoria()));
+        }
+
+        for (String categoria : CategoriaUtil.obtenerCategorias(requireContext())) {
+            if (categoriasPresentes.remove(categoria)) {
+                disponibles.add(categoria);
+            }
+        }
+        disponibles.addAll(categoriasPresentes);
+        return disponibles;
+    }
+
+    private void actualizarOpcionesCategoria() {
+        if (filtroCategoria == null || adaptadorCategorias == null) return;
+
+        opcionesCategorias.clear();
+        opcionesCategorias.add(TODAS_LAS_CATEGORIAS);
+        opcionesCategorias.addAll(obtenerCategoriasDisponibles());
+
+        if (!opcionesCategorias.contains(categoriaActual)) {
+            categoriaActual = TODAS_LAS_CATEGORIAS;
+        }
+
+        adaptadorCategorias.notifyDataSetChanged();
+        filtroCategoria.setText(categoriaActual, false);
     }
 
     private void cargarProductos() {
@@ -128,7 +197,10 @@ public class frmInventario extends Fragment implements AdaptadorProducto.OnProdu
                 boolean coincideFiltro = filtroActual.equals("Todos") ||
                         negocio.calcularEstado(p).equals(filtroActual);
 
-                if (coincideBusqueda && coincideFiltro) {
+                boolean coincideCategoria = categoriaActual.equals(TODAS_LAS_CATEGORIAS) ||
+                        CategoriaUtil.normalizar(p.getCategoria()).equals(categoriaActual);
+
+                if (coincideBusqueda && coincideFiltro && coincideCategoria) {
                     filtrados.add(p);
                 }
             }
@@ -142,6 +214,7 @@ public class frmInventario extends Fragment implements AdaptadorProducto.OnProdu
     // Método público para forzar refresco desde fuera si hace falta
     public void refrescarLista() {
         cargarProductos();
+        actualizarOpcionesCategoria();
         aplicarFiltros();
     }
 
@@ -158,6 +231,7 @@ public class frmInventario extends Fragment implements AdaptadorProducto.OnProdu
         Log.d(TAG, "onResume - refrescando lista");
         if (repositorio != null) {
             cargarProductos();
+            actualizarOpcionesCategoria();
             aplicarFiltros();
         }
     }

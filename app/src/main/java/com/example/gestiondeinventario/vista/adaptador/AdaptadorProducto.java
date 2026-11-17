@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.gestiondeinventario.R;
 import com.example.gestiondeinventario.modelo.Producto;
 import com.example.gestiondeinventario.negocio.ProductoNegocio;
+import com.example.gestiondeinventario.util.CategoriaUtil;
 
 import java.util.List;
 
@@ -67,7 +68,10 @@ public class AdaptadorProducto extends RecyclerView.Adapter<AdaptadorProducto.Pr
 
         public void bind(Producto producto, OnProductoClickListener listener, ProductoNegocio negocio) {
             nombre.setText(producto.getNombre());
-            skuCategoria.setText("Código: " + producto.getCodigo() + " | " + producto.getCategoria());
+
+            String categoria = CategoriaUtil.normalizar(producto.getCategoria());
+            skuCategoria.setText("Código: " + producto.getCodigo() + " | " + categoria);
+
             stock.setText(String.valueOf(producto.getStock()));
 
             String estadoTexto = negocio.calcularEstado(producto);

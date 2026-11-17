@@ -54,7 +54,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
-                android:text="SKU: HER-1042 | Herramientas"
+                android:text="SKU: TEC-001 | Cables"
                 android:textColor="@color/on_surface_variant"
                 android:textSize="12sp" />
 

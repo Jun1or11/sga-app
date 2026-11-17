@@ -1,4 +1,4 @@
-package com.example.gestiondeinventario.controlador;
+package com.example.gestiondeinventario.datos.dao;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -6,18 +6,18 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
-import com.example.gestiondeinventario.datos.conexion.ConexionDB;
+import com.example.gestiondeinventario.datos.bd.ConexionDB;
 import com.example.gestiondeinventario.modelo.Producto;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProductoControlador {
+public class ProductoDao {
 
     private ConexionDB conexionDB;
     private SQLiteDatabase db;
 
-    public ProductoControlador(Context context) {
+    public ProductoDao(Context context) {
         conexionDB = new ConexionDB(context);
     }
 
@@ -40,6 +40,11 @@ public class ProductoControlador {
         values.put(ConexionDB.COL_P_UBICACION, producto.getUbicacion());
         values.put(ConexionDB.COL_P_PRECIO, producto.getPrecio());
         values.put(ConexionDB.COL_P_CODIGO_QR, producto.getCodigoQr()); // NUEVO
+        if (producto.getProveedorId() > 0) {
+            values.put(ConexionDB.COL_P_PROVEEDOR_ID, producto.getProveedorId());
+        } else {
+            values.putNull(ConexionDB.COL_P_PROVEEDOR_ID);
+        }
 
         return db.insert(ConexionDB.TABLA_PRODUCTO, null, values);
     }
@@ -54,6 +59,11 @@ public class ProductoControlador {
         values.put(ConexionDB.COL_P_UBICACION, producto.getUbicacion());
         values.put(ConexionDB.COL_P_PRECIO, producto.getPrecio());
         values.put(ConexionDB.COL_P_CODIGO_QR, producto.getCodigoQr()); // NUEVO
+        if (producto.getProveedorId() > 0) {
+            values.put(ConexionDB.COL_P_PROVEEDOR_ID, producto.getProveedorId());
+        } else {
+            values.putNull(ConexionDB.COL_P_PROVEEDOR_ID);
+        }
 
         String where = ConexionDB.COL_P_ID + " = ?";
         String[] whereArgs = {String.valueOf(producto.getId())};
@@ -76,7 +86,8 @@ public class ProductoControlador {
         String[] columnas = {
                 ConexionDB.COL_P_ID, ConexionDB.COL_P_NOMBRE, ConexionDB.COL_P_CODIGO,
                 ConexionDB.COL_P_CATEGORIA, ConexionDB.COL_P_STOCK, ConexionDB.COL_P_STOCK_MINIMO,
-                ConexionDB.COL_P_UBICACION, ConexionDB.COL_P_PRECIO, ConexionDB.COL_P_CODIGO_QR
+                ConexionDB.COL_P_UBICACION, ConexionDB.COL_P_PRECIO, ConexionDB.COL_P_CODIGO_QR,
+                ConexionDB.COL_P_PROVEEDOR_ID
         };
         String where = ConexionDB.COL_P_ID + " = ?";
         String[] whereArgs = {String.valueOf(id)};
@@ -94,7 +105,8 @@ public class ProductoControlador {
         String[] columnas = {
                 ConexionDB.COL_P_ID, ConexionDB.COL_P_NOMBRE, ConexionDB.COL_P_CODIGO,
                 ConexionDB.COL_P_CATEGORIA, ConexionDB.COL_P_STOCK, ConexionDB.COL_P_STOCK_MINIMO,
-                ConexionDB.COL_P_UBICACION, ConexionDB.COL_P_PRECIO, ConexionDB.COL_P_CODIGO_QR
+                ConexionDB.COL_P_UBICACION, ConexionDB.COL_P_PRECIO, ConexionDB.COL_P_CODIGO_QR,
+                ConexionDB.COL_P_PROVEEDOR_ID
         };
         String where = ConexionDB.COL_P_CODIGO + " = ?";
         String[] whereArgs = {codigo};
@@ -113,7 +125,8 @@ public class ProductoControlador {
         String[] columnas = {
                 ConexionDB.COL_P_ID, ConexionDB.COL_P_NOMBRE, ConexionDB.COL_P_CODIGO,
                 ConexionDB.COL_P_CATEGORIA, ConexionDB.COL_P_STOCK, ConexionDB.COL_P_STOCK_MINIMO,
-                ConexionDB.COL_P_UBICACION, ConexionDB.COL_P_PRECIO, ConexionDB.COL_P_CODIGO_QR
+                ConexionDB.COL_P_UBICACION, ConexionDB.COL_P_PRECIO, ConexionDB.COL_P_CODIGO_QR,
+                ConexionDB.COL_P_PROVEEDOR_ID
         };
 
         Cursor cursor = db.query(ConexionDB.TABLA_PRODUCTO, columnas, null, null, null, null, ConexionDB.COL_P_NOMBRE + " ASC");
@@ -131,7 +144,8 @@ public class ProductoControlador {
         String[] columnas = {
                 ConexionDB.COL_P_ID, ConexionDB.COL_P_NOMBRE, ConexionDB.COL_P_CODIGO,
                 ConexionDB.COL_P_CATEGORIA, ConexionDB.COL_P_STOCK, ConexionDB.COL_P_STOCK_MINIMO,
-                ConexionDB.COL_P_UBICACION, ConexionDB.COL_P_PRECIO, ConexionDB.COL_P_CODIGO_QR
+                ConexionDB.COL_P_UBICACION, ConexionDB.COL_P_PRECIO, ConexionDB.COL_P_CODIGO_QR,
+                ConexionDB.COL_P_PROVEEDOR_ID
         };
         String where = ConexionDB.COL_P_NOMBRE + " LIKE ?";
         String[] whereArgs = {"%" + busqueda + "%"};
@@ -151,7 +165,8 @@ public class ProductoControlador {
         String[] columnas = {
                 ConexionDB.COL_P_ID, ConexionDB.COL_P_NOMBRE, ConexionDB.COL_P_CODIGO,
                 ConexionDB.COL_P_CATEGORIA, ConexionDB.COL_P_STOCK, ConexionDB.COL_P_STOCK_MINIMO,
-                ConexionDB.COL_P_UBICACION, ConexionDB.COL_P_PRECIO, ConexionDB.COL_P_CODIGO_QR
+                ConexionDB.COL_P_UBICACION, ConexionDB.COL_P_PRECIO, ConexionDB.COL_P_CODIGO_QR,
+                ConexionDB.COL_P_PROVEEDOR_ID
         };
 
         String where;
@@ -195,7 +210,8 @@ public class ProductoControlador {
         String ubicacion = cursor.getString(cursor.getColumnIndexOrThrow(ConexionDB.COL_P_UBICACION));
         double precio = cursor.getDouble(cursor.getColumnIndexOrThrow(ConexionDB.COL_P_PRECIO));
         String codigoQr = cursor.getString(cursor.getColumnIndexOrThrow(ConexionDB.COL_P_CODIGO_QR)); // NUEVO
+        int proveedorId = cursor.getInt(cursor.getColumnIndexOrThrow(ConexionDB.COL_P_PROVEEDOR_ID));
 
-        return new Producto(id, nombre, codigo, categoria, stock, stockMinimo, ubicacion, precio, codigoQr);
+        return new Producto(id, nombre, codigo, categoria, stock, stockMinimo, ubicacion, precio, codigoQr, proveedorId);
     }
 }

@@ -20,7 +20,7 @@
         <com.google.android.material.card.MaterialCardView
             android:layout_width="56dp"
             android:layout_height="56dp"
-            app:cardBackgroundColor="#F8F9FA"
+            app:cardBackgroundColor="@color/secondary"
             app:cardCornerRadius="16dp"
             app:cardElevation="0dp">
 
@@ -57,7 +57,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
                 android:text="S/ 8.50 c/u"
-                android:textColor="#9E9E9E"
+                android:textColor="@color/on_surface_variant"
                 android:textSize="14sp" />
         </LinearLayout>
 

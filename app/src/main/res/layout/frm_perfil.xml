@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -74,17 +74,47 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <TextView style="@style/ProfileOptionStyle" android:text="Notificaciones" />
+                <TextView
+                    android:id="@+id/btn_notificaciones_perfil"
+                    style="@style/ProfileOptionStyle"
+                    android:text="Notificaciones" />
                 <View style="@style/DividerStyle"/>
-                <TextView style="@style/ProfileOptionStyle" android:text="Sincronización de datos" />
+                <TextView
+                    android:id="@+id/btn_config_escaner"
+                    style="@style/ProfileOptionStyle"
+                    android:text="Configurar escáner" />
                 <View style="@style/DividerStyle"/>
-                <TextView style="@style/ProfileOptionStyle" android:text="Configurar escáner" />
+                <TextView
+                    android:id="@+id/btn_cambiar_password"
+                    style="@style/ProfileOptionStyle"
+                    android:text="Cambiar contraseña" />
                 <View style="@style/DividerStyle"/>
-                <TextView style="@style/ProfileOptionStyle" android:text="Usuarios y permisos" />
+                <Switch
+                    android:id="@+id/switch_tema_oscuro"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="16dp"
+                    android:text="Tema oscuro"
+                    android:textColor="@color/on_surface"
+                    android:textSize="16sp" />
+                <View style="@style/DividerStyle"/>
+                <TextView
+                    android:id="@+id/btn_acerca_de"
+                    style="@style/ProfileOptionStyle"
+                    android:text="Acerca de" />
                 <View style="@style/DividerStyle"/>
                 <TextView android:id="@+id/btn_logout" style="@style/ProfileOptionStyle" android:text="Cerrar sesión" android:textColor="@color/error" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
+
+        <TextView
+            android:id="@+id/tv_hora_salida"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Hora de salida: 14:00"
+            android:textColor="@color/on_surface_variant"
+            android:textSize="14sp" />
 
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

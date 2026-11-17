@@ -26,16 +26,14 @@ public class ProductoNegocio {
         return producto != null &&
                 producto.getNombre() != null && !producto.getNombre().trim().isEmpty() &&
                 producto.getCodigo() != null && !producto.getCodigo().trim().isEmpty() &&
-                producto.getCategoria() != null && !producto.getCategoria().trim().isEmpty() &&
                 producto.getStock() >= 0 &&
                 producto.getStockMinimo() >= 0 &&
                 producto.getPrecio() >= 0;
     }
 
-    public String validarCampos(String nombre, String codigo, String categoria, String stockStr, String stockMinStr, String precioStr) {
+    public String validarCampos(String nombre, String codigo, String stockStr, String stockMinStr, String precioStr) {
         if (nombre == null || nombre.trim().isEmpty()) return "El nombre es obligatorio";
         if (codigo == null || codigo.trim().isEmpty()) return "El código es obligatorio";
-        if (categoria == null || categoria.trim().isEmpty()) return "La categoría es obligatoria";
 
         try {
             int stock = stockStr.isEmpty() ? 0 : Integer.parseInt(stockStr);
